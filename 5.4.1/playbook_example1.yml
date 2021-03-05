@@ -1,0 +1,13 @@
+- hosts: web-server
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Install apache2
+      apt: name=apache2 state=latest
+
+- hosts: db
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Install mysql
+      apt: name=mysql-server state=latest
