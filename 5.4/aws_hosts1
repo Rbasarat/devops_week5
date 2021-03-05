@@ -1,0 +1,20 @@
+[aws-ubuntu]
+ec2-54-226-26-126.compute-1.amazonaws.com
+ec2-35-175-104-37.compute-1.amazonaws.com
+
+[aws-amazon]
+
+[aws:children]
+aws-ubuntu
+aws-amazon
+
+[aws:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[aws-amazon:vars]
+asible_ssh_user=ec2-user
+
+[aws-ubuntu:vars]
+ansible_ssh_user=ubuntu
+
