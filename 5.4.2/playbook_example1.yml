@@ -1,0 +1,30 @@
+- hosts: web-server
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Install apache2
+      apt: name=apache2 state=latest
+    - name: Generate secret
+      shell: date +%s | sha256sum | base64 | head -c 32 ; echo
+      register: command_output
+    - name:
+      debug:
+        msg: "Secret Password is {{ command_output.stdout }}"
+    - name: Add command_output to dummy host
+      add_host:
+        name: "command_output_holder"
+        passwd: "{{ command_output.stdout }}"
+    - name: 
+      debug:
+        msg: "Secret password is {{ hostvars['command_output_holder']['passwd'] }}"
+
+
+- hosts: db
+  become: true
+  gather_facts: False
+  tasks:
+    - name: Install mysql
+      apt: name=mysql-server state=latest
+    - name: print passwd
+      debug:
+        msg: "Secret Password is {{ hostvars['command_output_holder']['passwd'] }}"
