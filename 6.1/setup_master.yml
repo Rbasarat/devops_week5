@@ -1,0 +1,60 @@
+- name: Setup k8 master
+  hosts: k8-master
+  become: true
+  tasks:
+    - name: Enable br_netfilter module
+      shell: modprobe br_netfilter
+
+    - name: Set up network bridge
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: '1'
+
+    - name: Set up network bridge
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+
+    - name: reset the cluster before init
+      shell: kubeadm reset --force
+
+    - name: initialize the cluster
+      shell: kubeadm init
+
+    - name: create .kube directory
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: '0775'
+
+    - name: Check admin.conf file exists.
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_conf
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: $HOME/.kube/config
+        remote_src: yes
+        owner: "{{ ansible_ssh_user }}"
+        group: "{{ ansible_ssh_user }}"
+        mode: '0644'
+      when: k8s_conf.stat.exists
+ 
+    - name: Install the Weave Net addon
+      shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+    - name: Elevate master
+      shell: kubectl taint nodes --all node-role.kubernetes.io/master-
+    
+    - name: Generate join command
+      shell: kubeadm token create --print-join-command
+      register: k8_join_command_local
+
+    - name: Expose join command to other plays
+      add_host:
+        name: "command_output_holder"
+        join_command: "{{ k8_join_command_local.stdout }}"
+        debug: 
+          msg: "{{k8_join_command_local}}"

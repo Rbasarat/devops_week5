@@ -1,0 +1,54 @@
+- name: Install python3, docker and kubernetes
+  hosts: all
+  become: true
+  tasks:
+    - name: Bootstrap a host without python3 installed
+      raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
+
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools', gnupg-agent]
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+
+    - name: Enable service docker, and enable persistently
+      service: 
+        name: docker
+        enabled: yes
+        
+    - name: Add Google official GPG key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes Repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main 
+        state: present
+        filename: kubernetes
+        mode: 0600
+
+    - name: Installing Kubernetes Cluster Packages.
+      apt: 
+        name:
+          - kubeadm
+          - kubectl
+          - kubelet
+          - kubernetes-cni
+        state: present
+
+    - name: Enable service kubelet, and enable persistently
+      service: 
+        name: kubelet
+        enabled: yes

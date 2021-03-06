@@ -1,0 +1,8 @@
+- hosts: worker
+  become: true
+  tasks:
+    - name: Reset worker node
+      shell: kubeadm reset --force
+
+    - name: Join k8 cluster
+      shell: "{{ hostvars['command_output_holder']['join_command'] }}"

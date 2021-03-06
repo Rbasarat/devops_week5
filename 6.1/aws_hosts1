@@ -1,0 +1,17 @@
+[k8-master]
+ec2-3-237-5-11.compute-1.amazonaws.com
+
+[worker]
+ec2-18-234-83-67.compute-1.amazonaws.com
+ec2-18-207-156-144.compute-1.amazonaws.com
+ec2-54-89-193-45.compute-1.amazonaws.com
+ec2-18-208-157-118.compute-1.amazonaws.com
+
+[cluster:children]
+k8-master
+worker
+
+[cluster:vars]
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_user=ubuntu

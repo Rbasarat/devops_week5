@@ -1,0 +1,15 @@
+---
+# - import_playbook: prepare.yml
+- import_playbook: setup_master.yml
+- import_playbook: setup_worker.yml
+
+- hosts: k8-master
+  become: true
+  tasks:
+    - name: Verify joined nodes
+      shell: kubectl get nodes
+      register: k8_joined_nodes
+    
+    - name:
+      debug:
+        msg: "Currently joined nodes : {{k8_joined_nodes.stdout}}"
