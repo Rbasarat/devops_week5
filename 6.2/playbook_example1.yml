@@ -1,0 +1,2 @@
+---
+- import_playbook: setup_metric_server.yml

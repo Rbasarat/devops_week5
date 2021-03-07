@@ -1,0 +1,14 @@
+- hosts: k8-master
+  become: true
+  tasks:
+    - name: Install zip
+      apt: update_cache=yes name=zip state=latest
+
+    - name: Unarchive a file that needs to be downloaded (added in 2.0)
+      ansible.builtin.unarchive:
+        src: https://surfdrive.surf.nl/files/index.php/s/RCxPtHnz1agrY7V/download
+        dest: $HOME
+        remote_src: yes
+
+    - name: Deploy metrics server
+      shell: kubectl create -f $HOME/kubernetes/
