@@ -1,11 +1,11 @@
 [k8-master]
-ec2-3-237-5-11.compute-1.amazonaws.com
+ec2-3-238-127-186.compute-1.amazonaws.com
 
 [worker]
-ec2-18-234-83-67.compute-1.amazonaws.com
-ec2-18-207-156-144.compute-1.amazonaws.com
-ec2-54-89-193-45.compute-1.amazonaws.com
-ec2-18-208-157-118.compute-1.amazonaws.com
+ec2-3-90-2-62.compute-1.amazonaws.com
+ec2-34-227-24-30.compute-1.amazonaws.com
+ec2-54-234-23-88.compute-1.amazonaws.com
+ec2-54-82-29-46.compute-1.amazonaws.com
 
 [cluster:children]
 k8-master
